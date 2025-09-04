@@ -1,0 +1,18 @@
+# Directorio del entorno virtual
+.venv/
+venv/
+ent_virt/
+entorno_virtual
+
+# Archivos de caché de Python
+__pycache__/
+*.pyc
+
+# Archivos de logs y datos
+*.log
+*.sqlite3
+*.db
+
+# Archivos de configuración y credenciales sensibles
+.env
+
