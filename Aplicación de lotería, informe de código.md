@@ -7,30 +7,37 @@ A continuación se presenta la versión final del código de la aplicación de l
 ```python
 #!/usr/bin/env python3
 """
- __titulo__ loteria_app.py
+    __titulo__ loteria_app.py
 
-    Iniciar con: streamlit run loteria_app.py
- @param:
- @return: app web para introducir combinaciones nuevas en la BD y generar combinaciones de Lotería Primitiva
+Iniciar con: streamlit run loteria_app.py
+    @param:
+    @return: app web para introducir combinaciones nuevas en la BD
+             y generar combinaciones de Lotería Primitiva
 
- Copyright (C) 2025 Iñaki Izaguerri <igizca @ gmail.com>
- License GPL-3.0 or later
- You should have received a copy of the GNU General Public License
-    along with this program. If not, see [https://www.gnu.org/licenses/](https://www.gnu.org/licenses/).
+    Copyright (C) 2025 Iñaki Izaguerri <igizca @ gmail.com>
+    License GPL-3.0 or later
+    You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import streamlit as st
-import pandas as pd
-import sqlite3
-import numpy as np
 import io
+import sqlite3
+from datetime import datetime
+
+import numpy as np
+import pandas as pd
+import streamlit as st
 
 DB_FILE = "loteria.db"
+
 
 def cargar_combinaciones():
     conn = sqlite3.connect(DB_FILE)
     # Seleccionar explícitamente las columnas y ordenar por fecha descendente
-    df = pd.read_sql("SELECT fecha, n1, n2, n3, n4, n5, n6, n7 FROM combinaciones ORDER BY fecha DESC", conn)
+    df = pd.read_sql(
+        "SELECT fecha, n1, n2, n3, n4, n5, n6, n7 FROM combinaciones ORDER BY fecha DESC",
+        conn,
+    )
     conn.close()
 
     # Convertir las columnas de números a tipo int para evitar errores
@@ -38,6 +45,7 @@ def cargar_combinaciones():
         df[f"n{i}"] = pd.to_numeric(df[f"n{i}"], errors="coerce").fillna(0).astype(int)
 
     return df
+
 
 def calcular_estadisticas(df):
     """
@@ -71,30 +79,39 @@ def calcular_estadisticas(df):
     ausencia_min = stats_df["Ausencia (días)"].min()
     ausencia_max = stats_df["Ausencia (días)"].max()
     if ausencia_max > ausencia_min:
-        stats_df['Prob_Ausencia'] = (stats_df["Ausencia (días)"] - ausencia_min) / (ausencia_max - ausencia_min)
+        stats_df["Prob_Ausencia"] = (stats_df["Ausencia (días)"] - ausencia_min) / (
+            ausencia_max - ausencia_min
+        )
     else:
-        stats_df['Prob_Ausencia'] = 0
+        stats_df["Prob_Ausencia"] = 0
 
     # Normalizar Frecuencia (inverso, los menos frecuentes tienen más probabilidad)
     frecuencia_min = stats_df["Veces"].min()
     frecuencia_max = stats_df["Veces"].max()
     if frecuencia_max > frecuencia_min:
-        stats_df['Prob_Frecuencia'] = 1 - ((stats_df["Veces"] - frecuencia_min) / (frecuencia_max - frecuencia_min))
+        stats_df["Prob_Frecuencia"] = 1 - (
+            (stats_df["Veces"] - frecuencia_min) / (frecuencia_max - frecuencia_min)
+        )
     else:
-        stats_df['Prob_Frecuencia'] = 0
+        stats_df["Prob_Frecuencia"] = 0
 
     # Ponderar y sumar para obtener la Probabilidad Total
     # Pesos (ajustables): 60% para ausencia y 40% para frecuencia
-    stats_df['Probabilidad'] = (stats_df['Prob_Ausencia'] * 0.6) + (stats_df['Prob_Frecuencia'] * 0.4)
-    
+    stats_df["Probabilidad"] = (stats_df["Prob_Ausencia"] * 0.6) + (
+        stats_df["Prob_Frecuencia"] * 0.4
+    )
+
     # Formatear la probabilidad como porcentaje
-    stats_df['Probabilidad'] = (stats_df['Probabilidad'] * 100).round(2).astype(str) + '%'
-    
+    stats_df["Probabilidad"] = (stats_df["Probabilidad"] * 100).round(2).astype(
+        str
+    ) + "%"
+
     # Limpiar columnas temporales
-    stats_df = stats_df.drop(columns=['Prob_Ausencia', 'Prob_Frecuencia'])
+    stats_df = stats_df.drop(columns=["Prob_Ausencia", "Prob_Frecuencia"])
     stats_df.sort_values(by="Número", ascending=True, inplace=True)
-    
+
     return stats_df
+
 
 def generar_combinaciones_equilibradas(stats_df, cantidad=7):
     """
@@ -103,13 +120,13 @@ def generar_combinaciones_equilibradas(stats_df, cantidad=7):
     """
     # Ordenar el DataFrame por probabilidad para la selección de números
     stats_df.sort_values(by="Probabilidad", ascending=False, inplace=True)
-    
+
     # Obtener los números de la lista ordenada por sus probabilidades
     ordenados = stats_df["Número"].tolist()
 
-    grupo1 = ordenados[:14]   # top 14
-    grupo2 = ordenados[14:35] # siguientes 21
-    grupo3 = ordenados[35:]   # últimos 14
+    grupo1 = ordenados[:14]  # top 14
+    grupo2 = ordenados[14:35]  # siguientes 21
+    grupo3 = ordenados[35:]  # últimos 14
 
     rng = np.random.default_rng()
     usados = set()
@@ -128,6 +145,7 @@ def generar_combinaciones_equilibradas(stats_df, cantidad=7):
 
     return np.array(combinaciones)
 
+
 def insertar_combinacion(fecha, nums):
     """
     Inserta una nueva combinación en la base de datos.
@@ -142,7 +160,7 @@ def insertar_combinacion(fecha, nums):
         # Construir la consulta de inserción dinámicamente
         columnas = ["fecha"] + [f"n{i}" for i in range(1, 8)]
         sql_insert = f"""
-            INSERT INTO combinaciones ({', '.join(columnas)})
+            INSERT INTO combinaciones ({", ".join(columnas)})
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """
         valores = [fecha] + nums
@@ -154,6 +172,7 @@ def insertar_combinacion(fecha, nums):
     finally:
         if conn:
             conn.close()
+
 
 def crear_db():
     """
@@ -178,17 +197,19 @@ def crear_db():
     conn.commit()
     conn.close()
 
+
 def main():
     # Usar el ancho completo de la página
     st.set_page_config(layout="wide")
-    
+
     crear_db()
     st.title("Generador de combinaciones de lotería")
 
     # --- Sección de Análisis de datos ---
     st.header("Análisis de datos")
 
-    # Creamos dos columnas con anchos relativos (la segunda el doble de ancha que la primera)
+    # Creamos dos columnas con anchos relativos
+    # (la segunda el doble de ancha que la primera)
     col1, col2 = st.columns([1, 2])
 
     with col1:
@@ -208,7 +229,7 @@ def main():
             st.dataframe(df_combinaciones.set_index("fecha"), width="content")
         else:
             st.info("No hay combinaciones registradas aún.")
-            
+
     # --- Sección de Operaciones ---
     st.header("Operaciones")
     tab_insertar, tab_generar = st.tabs(["Añadir sorteo", "Generar combinación"])
@@ -243,8 +264,11 @@ def main():
     with tab_generar:
         st.subheader("Generar combinaciones")
         num_combs = st.number_input(
-            "¿Cuántas combinaciones quieres generar? (1-8)", 
-            min_value=1, max_value=8, value=7, step=1
+            "¿Cuántas combinaciones quieres generar? (1-8)",
+            min_value=1,
+            max_value=8,
+            value=7,
+            step=1,
         )
         if st.button("Generar combinaciones"):
             stats = calcular_estadisticas(df_combinaciones)
@@ -267,8 +291,10 @@ def main():
                 )
             else:
                 st.error(
-                    "No se pudieron generar combinaciones. Asegúrate de que hay suficientes números disponibles para elegir sin repetir."
+                    "No se pudieron generar combinaciones. Asegúrate de que hay "
+                    "suficientes números disponibles para elegir sin repetir."
                 )
+
 
 if __name__ == "__main__":
     main()

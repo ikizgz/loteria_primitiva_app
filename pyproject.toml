@@ -16,7 +16,7 @@ select = [
 
 # Ignorar reglas específicas
 ignore = [
-    "E501",  # Ignora la longitud de línea (si line-length no es suficiente).
+    "E501",  # Ignora la longitud de línea predeterminada (si line-length no es mayor).
 ]
 
 # Excluir archivos y carpetas
