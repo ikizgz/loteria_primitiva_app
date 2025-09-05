@@ -10,7 +10,7 @@ echo Iniciando la aplicación de lotería. Se abrirá en una nueva ventana de na
 echo.
 
 REM Iniciar la app en una nueva ventana. La terminal actual seguirá activa.
-start "Lotería App" streamlit run loteria_app.py
+start "Lotería App" streamlit run src\loteria_app.py
 
 echo La aplicación se esta ejecutando. Para cerrarla de forma segura,
 echo primero cierra la pestana del navegador.

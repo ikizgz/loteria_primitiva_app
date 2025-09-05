@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 """
-	__titulo__ importar_datos.py
+    __titulo__ importar_datos.py
 
-    Importación de datos inicial desde el archivo ODS a una base de datos SQLite
+Importación de datos inicial desde el archivo ODS a una base de datos SQLite
 
-	Copyright (C) 2025 Iñaki Izaguerri <igizca @ gmail.com>
-	License GPL-3.0 or later
-	You should have received a copy of the GNU General Public License
-    along with this program. If not, see <https://www.gnu.org/licenses/>.
-    """
+    Copyright (C) 2025 Iñaki Izaguerri <igizca @ gmail.com>
+    License GPL-3.0 or later
+    You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+"""
+
+import calendar
+import sqlite3
 
 import pandas as pd
-import sqlite3
-from datetime import datetime
-import calendar
 
-DB_FILE = "../loteria.db"
+DB_FILE = "../src/loteria.db"
 
 
 def init_db():

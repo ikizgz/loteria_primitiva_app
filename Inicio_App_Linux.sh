@@ -6,7 +6,7 @@ echo "Activando el entorno virtual..."
 source venv/bin/activate
 
 echo "Iniciando la aplicación de lotería en segundo plano..."
-streamlit run loteria_app.py &
+streamlit run src/loteria_app.py &
 
 # Capturar el ID del proceso de Streamlit para poder cerrarlo después
 STREAMLIT_PID=$!
