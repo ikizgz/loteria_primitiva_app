@@ -4,7 +4,8 @@
 
 Iniciar con: streamlit run loteria_app.py
     @param:
-    @return: app web para introducir combinaciones nuevas en la BD y generar combinaciones de Lotería Primitiva
+    @return: app web para introducir combinaciones nuevas en la BD
+             y generar combinaciones de Lotería Primitiva
 
     Copyright (C) 2025 Iñaki Izaguerri <igizca @ gmail.com>
     License GPL-3.0 or later
@@ -12,12 +13,13 @@ Iniciar con: streamlit run loteria_app.py
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
-import streamlit as st
-import pandas as pd
+import io
 import sqlite3
 from datetime import datetime
+
 import numpy as np
-import io
+import pandas as pd
+import streamlit as st
 
 DB_FILE = "loteria.db"
 
@@ -151,7 +153,7 @@ def insertar_combinacion(fecha, nums):
         # Construir la consulta de inserción dinámicamente
         columnas = ["fecha"] + [f"n{i}" for i in range(1, 8)]
         sql_insert = f"""
-            INSERT INTO combinaciones ({', '.join(columnas)})
+            INSERT INTO combinaciones ({", ".join(columnas)})
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """
         valores = [fecha] + nums
@@ -199,7 +201,8 @@ def main():
     # --- Sección de Análisis de datos ---
     st.header("Análisis de datos")
 
-    # Creamos dos columnas con anchos relativos (la segunda el doble de ancha que la primera)
+    # Creamos dos columnas con anchos relativos
+    # (la segunda el doble de ancha que la primera)
     col1, col2 = st.columns([1, 2])
 
     with col1:
@@ -281,7 +284,8 @@ def main():
                 )
             else:
                 st.error(
-                    "No se pudieron generar combinaciones. Asegúrate de que hay suficientes números disponibles para elegir sin repetir."
+                    "No se pudieron generar combinaciones. Asegúrate de que hay "
+                    "suficientes números disponibles para elegir sin repetir."
                 )
 
 
