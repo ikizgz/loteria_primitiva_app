@@ -3,7 +3,7 @@ REM Este script activa el entorno virtual y ejecuta la aplicación de Streamlit.
 REM Ofrece instrucciones para cerrar todo de forma segura.
 
 echo Activando el entorno virtual...
-call .venv\Scripts\activate.bat
+call venv\Scripts\activate.bat
 
 echo.
 echo Iniciando la aplicación de lotería. Se abrirá en una nueva ventana de navegador.

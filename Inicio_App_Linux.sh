@@ -3,7 +3,7 @@
 # Este script activa el entorno virtual, inicia la aplicación de Streamlit en segundo plano,
 # y luego la cierra cuando el usuario lo solicite.
 echo "Activando el entorno virtual..."
-source .venv/bin/activate
+source venv/bin/activate
 
 echo "Iniciando la aplicación de lotería en segundo plano..."
 streamlit run loteria_app.py &
