@@ -2,7 +2,9 @@
 
 ## 1. Código Definitivo (loteria_app.py)
 
-A continuación se presenta la versión final del código de la aplicación de lotería, que integra las funcionalidades de análisis de datos, generación de combinaciones y gestión de la base de datos.
+A continuación se presenta la versión final del código de la aplicación de
+lotería, que integra las funcionalidades de análisis de datos, generación de
+combinaciones y gestión de la base de datos.
 
 ```python
 #!/usr/bin/env python3
@@ -304,47 +306,73 @@ if __name__ == "__main__":
 
 ### Estructura General
 
-El programa es una aplicación web interactiva construida con la librería **Streamlit**. Su objetivo principal es ayudarte a gestionar y analizar los sorteos de la Lotería Primitiva, y a generar nuevas combinaciones basadas en un algoritmo de probabilidad.
+El programa es una aplicación web interactiva construida con la librería
+**Streamlit**. Su objetivo principal es ayudarte a gestionar y analizar los
+sorteos de la Lotería Primitiva, y a generar nuevas combinaciones basadas en un
+algoritmo de probabilidad.
 
 ### Componentes Clave
 
 #### Manejo de la Base de Datos (sqlite3)
 
-- **DB_FILE** = "loteria.db": Define el nombre del archivo de la base de datos SQLite.
+- **DB_FILE** = "loteria.db": Define el nombre del archivo de la base de datos
+  SQLite.
 
-- **crear_db()**: Esta función crea una tabla llamada combinaciones si no existe. La tabla almacena la fecha del sorteo y los 7 números (6 principales y 1 complementario).
+- **crear_db()**: Esta función crea una tabla llamada combinaciones si no
+  existe. La tabla almacena la fecha del sorteo y los 7 números (6 principales y
+  1 complementario).
 
-- **cargar_combinaciones()**: Lee todos los registros de la tabla combinaciones y los carga en un DataFrame de Pandas, ordenándolos por fecha de forma descendente. Esto es lo que se muestra en la sección de "Historial de combinaciones".
+- **cargar_combinaciones()**: Lee todos los registros de la tabla combinaciones
+  y los carga en un DataFrame de Pandas, ordenándolos por fecha de forma
+  descendente. Esto es lo que se muestra en la sección de "Historial de
+  combinaciones".
 
-- **insertar_combinacion()**: Se encarga de guardar un nuevo sorteo en la base de datos. Antes de insertar, verifica que la combinación para esa fecha no exista para evitar duplicados.
+- **insertar_combinacion()**: Se encarga de guardar un nuevo sorteo en la base
+  de datos. Antes de insertar, verifica que la combinación para esa fecha no
+  exista para evitar duplicados.
 
 #### Cálculo de Estadísticas y Probabilidades (pandas, numpy)
 
 - **calcular_estadisticas(df)**: Esta es la función central del algoritmo.
-  - Calcula el número de veces que cada número ha salido y la cantidad de días que lleva sin aparecer.
-  - Aplica la normalización para convertir la "Ausencia" y la "Frecuencia" de cada número en valores entre 0 y 1. Esto permite compararlos en una escala común.
-  - Calcula la "Probabilidad" final de cada número como una media ponderada: P(total)=(P(ausencia)
-times0.6)+(P(frecuencia)
-times0.4). Puedes ajustar los pesos 0.6 y 0.4 para darle más o menos importancia a la ausencia o a la frecuencia.
+  - Calcula el número de veces que cada número ha salido y la cantidad de días
+    que lleva sin aparecer.
+  - Aplica la normalización para convertir la "Ausencia" y la "Frecuencia" de
+    cada número en valores entre 0 y 1. Esto permite compararlos en una escala
+    común.
+  - Calcula la "Probabilidad" final de cada número como una media ponderada:
+    P(total)=(P(ausencia) times0.6)+(P(frecuencia) times0.4). Puedes ajustar los
+    pesos 0.6 y 0.4 para darle más o menos importancia a la ausencia o a la
+    frecuencia.
 
 #### Generación de Combinaciones (numpy)
 
-- **generar_combinaciones_equilibradas(stats_df, cantidad)**: Esta función crea las combinaciones de 6 números basándose en las probabilidades calculadas.
+- **generar_combinaciones_equilibradas(stats_df, cantidad)**: Esta función crea
+  las combinaciones de 6 números basándose en las probabilidades calculadas.
   - Primero, ordena todos los números del 1 al 49 de mayor a menor probabilidad.
   - Divide estos 49 números en tres grupos:
     - Grupo 1 (14 números): Los más probables (top 14).
     - Grupo 2 (21 números): Los de probabilidad media.
-    - Grupo 3 (14 números): Los menos probables.  
-  - Para cada combinación a generar, selecciona 2 números del Grupo 1, 3 del Grupo 2 y 1 del Grupo 3, asegurándose de que no haya números repetidos entre las combinaciones generadas. Esto garantiza un equilibrio entre los números más y menos probables, basándose en tu historial.
+    - Grupo 3 (14 números): Los menos probables.
+  - Para cada combinación a generar, selecciona 2 números del Grupo 1, 3 del
+    Grupo 2 y 1 del Grupo 3, asegurándose de que no haya números repetidos entre
+    las combinaciones generadas. Esto garantiza un equilibrio entre los números
+    más y menos probables, basándose en tu historial.
 
 #### Interfaz de Usuario (streamlit)
 
 - **main()**: Es la función principal que organiza la interfaz.
-  - Usa `st.set_page_config(layout="wide")` para que la página ocupe todo el ancho de la pantalla.
-  - Utiliza `st.columns()` para organizar las estadísticas y el historial en dos columnas.
+  - Usa `st.set_page_config(layout="wide")` para que la página ocupe todo el
+    ancho de la pantalla.
+  - Utiliza `st.columns()` para organizar las estadísticas y el historial en dos
+    columnas.
   - Define dos pestañas (`st.tabs`):
-    - **"Añadir sorteo"**: Permite introducir manualmente una combinación, validando que se ingresen 7 números y que la fecha no esté duplicada.
-    - **"Generar combinación"**: Muestra el campo para elegir la cantidad de combinaciones (de 1 a 8) y el botón para generarlas.
-  - Una vez generadas, las muestra y ofrece la opción de descargarlas en un archivo de texto.
+    - **"Añadir sorteo"**: Permite introducir manualmente una combinación,
+      validando que se ingresen 7 números y que la fecha no esté duplicada.
+    - **"Generar combinación"**: Muestra el campo para elegir la cantidad de
+      combinaciones (de 1 a 8) y el botón para generarlas.
+  - Una vez generadas, las muestra y ofrece la opción de descargarlas en un
+    archivo de texto.
 
-*Este informe abarca la funcionalidad completa de la aplicación, desde la gestión de datos hasta la lógica del algoritmo de probabilidad y la interfaz de usuario.*
+_Este informe abarca la funcionalidad completa de la aplicación, desde la
+gestión de datos hasta la lógica del algoritmo de probabilidad y la interfaz de
+usuario._
