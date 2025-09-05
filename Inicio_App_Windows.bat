@@ -15,7 +15,7 @@ start "Lotería App" streamlit run loteria_app.py
 echo La aplicación se esta ejecutando. Para cerrarla de forma segura,
 echo primero cierra la pestana del navegador.
 echo.
-echo Luego, presiona Ctrl+C en esta terminal para detener el servidor de Streamlit.
+echo Luego, presiona Ctrl+C la esta terminal para detener el servidor de Streamlit.
 echo Y finalmente, escribe "deactivate" para salir del entorno virtual.
 
 pause
